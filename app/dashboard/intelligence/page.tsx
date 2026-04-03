@@ -104,7 +104,7 @@ export default function IntelligencePage() {
         </div>
 
         <div className="relative z-10 space-y-4">
-          <div className="relative overflow-hidden rounded-sm border border-outline-variant/30 bg-surface-container">
+          <div className="relative overflow-hidden rounded-sm border border-outline-variant/30 bg-surface-container/40 backdrop-blur-sm">
             <textarea 
               className="w-full bg-transparent p-4 text-on-surface font-ibm text-sm resize-none focus:outline-none min-h-[100px]"
               placeholder="Enter analysis directives..."

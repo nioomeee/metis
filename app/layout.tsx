@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased selection:bg-accent-primary selection:text-white">
+      <body className="antialiased bg-background text-on-surface selection:bg-accent-primary selection:text-white">
         
         <Providers>
           <CustomCursor />

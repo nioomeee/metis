@@ -1,0 +1,40 @@
+
+> metis@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+   Generating static pages (3/14) 
+   Generating static pages (6/14) 
+   Generating static pages (10/14) 
+ Γ£ô Generating static pages (14/14)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    11.5 kB         153 kB
+Γö£ Γùï /_not-found                          873 B          88.2 kB
+Γö£ Γùï /dashboard/exit                      5.45 kB         138 kB
+Γö£ Γùï /dashboard/intelligence              7.02 kB         140 kB
+Γö£ Γùï /dashboard/portfolio                 5.14 kB         138 kB
+Γö£ Γùï /dashboard/settings                  6.26 kB         136 kB
+Γö£ Γùï /dashboard/tax                       4.43 kB         138 kB
+Γö£ Γùï /dashboard/vault                     5.51 kB         139 kB
+Γö£ Γùï /manifesto                           3.55 kB         142 kB
+Γö£ Γùï /network-status                      2.37 kB         144 kB
+Γö£ Γùï /security                            2.86 kB         145 kB
+Γöö Γùï /system-logs                         3.43 kB         142 kB
++ First Load JS shared by all            87.3 kB
+  Γö£ chunks/117-c86a41b869f6b521.js       31.7 kB
+  Γö£ chunks/fd9d1056-6922f449a204c2cc.js  53.6 kB
+  Γöö other shared chunks (total)          1.96 kB
+
+
+Γùï  (Static)  prerendered as static content
+

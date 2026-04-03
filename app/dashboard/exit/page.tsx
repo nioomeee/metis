@@ -22,7 +22,7 @@ function RiskMatrix() {
 
 export default function ExitVectorPage() {
   const [data, setData] = useState<ReturnType<typeof getMockExitVectors> | null>(null);
-  // User-controlled only — no default selection, no automatic cycling
+  // BUG FIX: activeScenario is user-controlled only, initialised to null (no default highlight)
   const [activeScenario, setActiveScenario] = useState<number | null>(null);
 
   useEffect(() => {
@@ -61,14 +61,13 @@ export default function ExitVectorPage() {
                <CardContent className="p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                      {pos.vectors.map((vec, i) => {
-                           // Define custom entrance directions based on vector properties
-                           let initialVal: any = { opacity: 0, y: 50 };
+                           let initialVal: { opacity: number; x?: number; y?: number } = { opacity: 0, y: 50 };
                            if (i === 0) initialVal = { opacity: 0, x: -50, y: 0 };
                            else if (i === pos.vectors.length - 1) initialVal = { opacity: 0, x: 50, y: 0 };
 
-                           // isRecommended is a VISUAL LABEL ONLY — does NOT control highlighted state
-                           const isRecommended = i === 1;
-                           // isActive is determined solely by user clicking the card
+                           // BUG FIX: "RECOMMENDED" is a cosmetic label only — it does NOT set activeScenario.
+                           // Visual highlight is entirely user-controlled via onClick.
+                           const isRecommended = i === 1; // visual badge only
                            const isActive = activeScenario === i;
 
                            return (
@@ -79,28 +78,46 @@ export default function ExitVectorPage() {
                               transition={{ duration: 0.6, delay: i * 0.15, ease: 'easeOut' }}
                               onClick={() => setActiveScenario(i)}
                               style={{
+                                position: 'relative',
+                                padding: 20,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                minHeight: 180,
+                                overflow: 'hidden',
+                                cursor: 'pointer',
+                                // Highlight is ONLY active when user has selected this card
                                 border: isActive
                                   ? '1px solid var(--accent-primary, #7B6EF6)'
-                                  : '1px solid rgba(70,72,80,0.2)',
+                                  : '1px solid var(--outline-variant, rgba(70,72,80,0.3))',
                                 background: isActive
                                   ? 'rgba(123,110,246,0.07)'
                                   : 'var(--surface, #07080C)',
                                 transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
-                                cursor: 'pointer',
-                                position: 'relative',
-                                padding: '20px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                minHeight: '180px',
-                                overflow: 'hidden',
+                                boxShadow: isActive
+                                  ? '0 0 20px rgba(123,110,246,0.15)'
+                                  : 'none',
                               }}
                            >
-                              <div style={{ position: 'relative', zIndex: 10 }}>
+                              {/* Shimmer only on active card */}
+                              {isActive && (
+                                 <div
+                                   className="absolute inset-0 z-0 opacity-20 bg-[linear-gradient(45deg,transparent_25%,var(--accent-primary)_50%,transparent_75%)] bg-[length:250%_250%,100%_100%] animate-[shimmer_3s_linear_infinite]"
+                                   style={{ animationName: 'shimmer' }}
+                                 />
+                              )}
+                              <style>{`
+                                @keyframes shimmer {
+                                  0% { background-position: 200% 0; }
+                                  100% { background-position: -200% 0; }
+                                }
+                              `}</style>
+
+                              <div className="relative z-10">
                                  <div className="font-geist text-xs text-on-surface uppercase tracking-widest mb-4 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                        {vec.label}
-                                       {/* REC badge is a visual label only — does not affect active state */}
+                                       {/* RECOMMENDED is purely cosmetic — does NOT control active state */}
                                        {isRecommended && (
                                          <span className="text-[9px] bg-accent-primary/20 text-accent-primary px-1.5 py-0.5 rounded-sm">
                                            REC
@@ -133,9 +150,13 @@ export default function ExitVectorPage() {
                                  </div>
                               </div>
 
-                              <div className="mt-6 pt-4 border-t border-outline-variant/15 flex items-center justify-between" style={{ position: 'relative', zIndex: 10 }}>
+                              <div className="mt-6 pt-4 border-t border-outline-variant/15 flex items-center justify-between relative z-10">
                                  <div className="font-serif text-xl text-on-surface">{formatUsd(vec.netProceeds)}</div>
-                                 <Button variant={isActive ? 'default' : 'ghost'} size="sm" className="h-8 px-3 text-xs tracking-widest">
+                                 <Button
+                                   variant={isActive ? 'default' : 'ghost'}
+                                   size="sm"
+                                   className="h-8 px-3 text-xs tracking-widest"
+                                 >
                                     <Target className="w-4 h-4 mr-2" /> EXECUTE
                                  </Button>
                               </div>
