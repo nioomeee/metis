@@ -1,7 +1,7 @@
 import { Sidebar } from '@/components/layout/Sidebar';
 import { TopBar } from '@/components/layout/TopBar';
 import { StatusBar } from '@/components/layout/StatusBar';
-import { LiquidAurora } from '@/components/motion/LiquidAurora';
+import { DynamicBackground } from '@/components/motion/DynamicBackground';
 import { PageContextBar } from '@/components/layout/PageContextBar';
 
 export default function DashboardLayout({
@@ -10,8 +10,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-background overflow-hidden selection:bg-accent-primary selection:text-white">
-      <LiquidAurora />
+    <div className="flex h-screen bg-background overflow-hidden selection:bg-accent-primary selection:text-white relative z-0">
+      <DynamicBackground />
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden relative">
         <TopBar />
