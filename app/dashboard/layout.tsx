@@ -1,6 +1,7 @@
 import { Sidebar } from '@/components/layout/Sidebar';
 import { TopBar } from '@/components/layout/TopBar';
 import { StatusBar } from '@/components/layout/StatusBar';
+import { LiquidAurora } from '@/components/motion/LiquidAurora';
 
 export default function DashboardLayout({
   children,
@@ -9,6 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex h-screen bg-background overflow-hidden selection:bg-accent-primary selection:text-white">
+      <LiquidAurora />
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden relative">
         <TopBar />

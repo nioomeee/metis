@@ -7,17 +7,52 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button';
 import { runMockInference, InferenceStatus } from '@/lib/mockSolRouter';
 import { useWallet } from '@/hooks/useWallet';
-import { Brain, ShieldAlert, Cpu, Activity, Fingerprint } from 'lucide-react';
+import { Brain, ShieldAlert, Cpu, Activity, Fingerprint, Copy, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+
+function Grid16({ status }: { status: InferenceStatus }) {
+  const getActiveCount = () => {
+    switch (status) {
+      case 'idle': return 0;
+      case 'encrypting': return 4;
+      case 'routing': return 10;
+      case 'analyzing': return 14;
+      case 'done': return 16;
+      case 'error': return 0;
+      default: return 0;
+    }
+  };
+  const activeCount = getActiveCount();
+  return (
+    <div className="grid grid-cols-4 gap-1 w-16 h-16 opacity-50">
+      {Array.from({ length: 16 }).map((_, i) => (
+        <div 
+          key={i} 
+          className={cn(
+            "w-3 h-3 rounded-[1px] transition-all duration-500",
+            i < activeCount 
+              ? (status === 'encrypting' ? 'bg-accent-secondary animate-pulse' : 'bg-accent-primary')
+              : "bg-surface-container-highest"
+          )}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function IntelligencePage() {
   const { connected } = useWallet();
   const [status, setStatus] = useState<InferenceStatus>('idle');
   const [currentStep, setCurrentStep] = useState<string>('Awaiting Directives');
   const [aiResponse, setAiResponse] = useState<any>(null);
+  const [copied, setCopied] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleInference = async () => {
     setStatus('encrypting');
     setAiResponse(null);
+    setCopied(false);
     try {
       const result = await runMockInference((step, newStatus) => {
         setCurrentStep(step);
@@ -29,11 +64,25 @@ export default function IntelligencePage() {
     }
   };
 
+  const handleCopy = () => {
+    if (aiResponse) {
+      navigator.clipboard.writeText(aiResponse.analysis);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <PageTransition>
-      <div className="space-y-8">
+      <div className="space-y-8 relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.03] rotate-[-15deg] z-0 select-none">
+          <span style={{ fontFamily: 'var(--font-cormorant)' }} className="text-9xl font-bold tracking-widest whitespace-nowrap">
+            CLASSIFIED
+          </span>
+        </div>
+
         {/* Header Area */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between relative z-10">
           <div>
             <h2 className="font-serif italic text-4xl text-on-surface mb-2">Submerged Intelligence</h2>
             <p className="font-geist text-on-surface-variant text-sm border-l-2 border-accent-secondary/50 pl-3 uppercase tracking-widest">
@@ -41,18 +90,42 @@ export default function IntelligencePage() {
             </p>
           </div>
           
-          <Button 
-            onClick={handleInference}
-            disabled={!connected || status === 'encrypting' || status === 'routing'}
-            className="group"
-          >
-            <Brain className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-            {(status === 'encrypting' || status === 'routing') ? 'Processing...' : 'Run TEE Inference'}
-          </Button>
+          <div className="flex items-center gap-6">
+            <Grid16 status={status} />
+            <Button 
+              onClick={handleInference}
+              disabled={!connected || status === 'encrypting' || status === 'routing'}
+              className="group"
+            >
+              <Brain className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+              {(status === 'encrypting' || status === 'routing') ? 'Processing...' : 'Run TEE Inference'}
+            </Button>
+          </div>
+        </div>
+
+        <div className="relative z-10 space-y-4">
+          <div className="relative overflow-hidden rounded-sm border border-outline-variant/30 bg-surface-container">
+            <textarea 
+              className="w-full bg-transparent p-4 text-on-surface font-ibm text-sm resize-none focus:outline-none min-h-[100px]"
+              placeholder="Enter analysis directives..."
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
+            <AnimatePresence>
+              {isFocused && (
+                <motion.div 
+                  initial={{ top: -10 }}
+                  animate={{ top: ['0%', '100%', '0%'] }}
+                  transition={{ duration: 4, ease: "linear", repeat: Infinity }}
+                  className="absolute left-0 right-0 h-[2px] bg-accent-primary/50 shadow-[0_0_8px_var(--accent-primary)] pointer-events-none"
+                />
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Inference Terminal */}
-        <Card variant="glass" className="border-accent-primary/20 bg-surface-container/40">
+        <Card variant="glass" className="border-accent-primary/20 bg-surface-container/40 relative z-10">
           <CardHeader className="border-b border-outline-variant/15 flex flex-row items-center justify-between pb-4">
             <div className="flex items-center gap-3">
               <Cpu className="w-5 h-5 text-accent-primary" />
@@ -64,8 +137,17 @@ export default function IntelligencePage() {
               </CardTitle>
             </div>
             {aiResponse && (
-              <div className="font-geist text-[10px] uppercase text-on-surface-variant flex items-center gap-2">
-                <Fingerprint className="w-3 h-3" /> Session ID: {aiResponse.sessionId}
+              <div className="flex items-center gap-4">
+                <div className="font-geist text-[10px] uppercase text-on-surface-variant flex items-center gap-2">
+                  <Fingerprint className="w-3 h-3" /> Session ID: {aiResponse.sessionId}
+                </div>
+                <button 
+                  onClick={handleCopy}
+                  className="text-on-surface-variant hover:text-accent-primary transition-colors flex items-center gap-1.5 border border-outline-variant/20 px-2 py-1 rounded-sm bg-surface-container text-xs"
+                >
+                  {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
               </div>
             )}
           </CardHeader>
@@ -96,7 +178,7 @@ export default function IntelligencePage() {
 
             {aiResponse && (
               <div className="space-y-6">
-                <div className="border-l-2 border-accent-tertiary/50 pl-4 py-1">
+                <div className="border-l-2 border-accent-tertiary/50 pl-4 py-1 relative group">
                   <p className="text-on-surface">
                     <span className="text-accent-tertiary">[ANALYSIS]</span> {aiResponse.analysis}
                   </p>

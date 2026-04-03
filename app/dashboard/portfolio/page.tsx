@@ -11,6 +11,38 @@ import { formatUsd, formatSol } from '@/lib/utils';
 import { Activity, ArrowUpRight, ArrowDownRight, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+function HealthScoreWidget({ score }: { score: number }) {
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+
+  return (
+    <div className="flex items-center gap-4">
+      <div className="relative w-14 h-14 flex items-center justify-center">
+        <svg className="w-full h-full -rotate-90">
+           <circle cx="28" cy="28" r={radius} className="stroke-surface-container-highest" strokeWidth="4" fill="transparent" />
+           <motion.circle 
+             cx="28" cy="28" r={radius} 
+             className="stroke-accent-primary" 
+             strokeWidth="4" 
+             fill="transparent" 
+             strokeDasharray={circumference}
+             initial={{ strokeDashoffset: circumference }}
+             animate={{ strokeDashoffset: offset }}
+             transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+             strokeLinecap="round"
+           />
+        </svg>
+        <span className="absolute font-dm font-bold text-sm text-on-surface">{score}</span>
+      </div>
+      <div>
+         <div className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Portfolio Health</div>
+         <div className="text-xs text-accent-primary flex items-center gap-1">System Optimal</div>
+      </div>
+    </div>
+  );
+}
+
 export default function PortfolioPage() {
   const [data, setData] = useState<ReturnType<typeof getMockPortfolio> | null>(null);
 
@@ -41,7 +73,7 @@ export default function PortfolioPage() {
             </div>
           </div>
           
-          <div className="flex gap-8 text-right font-geist">
+          <div className="flex gap-10 text-right font-geist">
              <div>
                <div className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">24H Delta</div>
                <div className={`text-lg flex items-center justify-end gap-1 ${data.pnl24h >= 0 ? 'text-accent-secondary' : 'text-error'}`}>
@@ -54,6 +86,9 @@ export default function PortfolioPage() {
                <div className="text-lg text-on-surface flex items-center gap-2 justify-end">
                   <Wallet className="w-4 h-4 text-outline-variant" /> {formatSol(data.solBalance * 1e9)}
                </div>
+             </div>
+             <div className="hidden lg:block border-l border-outline-variant/15 pl-8">
+               <HealthScoreWidget score={data.riskScore} />
              </div>
           </div>
         </section>
@@ -85,9 +120,15 @@ export default function PortfolioPage() {
                     >
                        {data.assets.map((asset) => (
                           <StaggerRow key={asset.symbol} className="hover:bg-surface-container-high/50 transition-colors">
-                             <td className="py-4 px-6">
+                              <td className="py-4 px-6">
                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant/20 flex flex-col items-center justify-center font-bold text-xs">
+                                  <div 
+                                    className="w-8 h-8 rounded-full border border-outline-variant/20 flex flex-col items-center justify-center font-bold text-xs"
+                                    style={{
+                                      backgroundColor: `hsl(${asset.symbol.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360}, 40%, 15%)`,
+                                      color: `hsl(${asset.symbol.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360}, 80%, 70%)`
+                                    }}
+                                  >
                                      {asset.symbol[0]}
                                   </div>
                                   <div>
@@ -102,9 +143,14 @@ export default function PortfolioPage() {
                                 {asset.change24h > 0 ? '+' : ''}{asset.change24h}%
                              </td>
                              <td className="py-4 px-6 text-right text-on-surface-variant">
-                                <div className="flex items-center justify-end gap-2">
+                                 <div className="flex items-center justify-end gap-2">
                                   <div className="w-16 h-1 bg-surface-container-highest overflow-hidden">
-                                     <div className="h-full bg-accent-primary" style={{ width: `${asset.allocation}%` }} />
+                                     <motion.div 
+                                       className="h-full bg-accent-primary" 
+                                       initial={{ width: 0 }}
+                                       animate={{ width: `${asset.allocation}%` }}
+                                       transition={{ duration: 1, delay: 0.5 + Math.random() * 0.5 }}
+                                     />
                                   </div>
                                   <span className="w-10">{asset.allocation}%</span>
                                 </div>

@@ -12,6 +12,7 @@ import { Magnetic } from '@/components/motion/Magnetic';
 import { motion } from 'framer-motion';
 import { Tilt3D } from '@/components/motion/Tilt3D';
 import { MetisLogo } from '@/components/brand/MetisLogo';
+import { AuroraBackground } from '@/components/effects/AuroraBackground';
 
 // Reusing a simplified version of Acertinity BackgroundLines for the landing
 // (Normally we'd import from Aceternity UI, but here's a pure CSS/SVG placeholder)
@@ -52,6 +53,7 @@ export default function LandingPage() {
   return (
     <PageTransition>
       <main className="min-h-screen relative flex flex-col bg-transparent selection:bg-[#F72585]/30">
+        <AuroraBackground />
         
         {/* Navigation / Header simple */}
         <header className="fixed top-0 w-full flex items-center justify-between px-8 py-6 z-50 bg-background/5 backdrop-blur-sm">

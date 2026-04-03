@@ -32,9 +32,25 @@ export default function TaxPage() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-surface-container p-6 border border-outline-variant/30 border-t-2 border-t-error">
-               <div className="font-geist text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Estimated Liability</div>
-               <div className="font-serif text-3xl text-error">{formatUsd(data.estimatedLiability)}</div>
+            <div className="bg-surface-container p-6 border border-outline-variant/30 border-t-2 border-t-error flex flex-col justify-between">
+               <div>
+                  <div className="font-geist text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Estimated Liability</div>
+                  <div className="font-serif text-3xl text-error">{formatUsd(data.estimatedLiability)}</div>
+               </div>
+               <div className="mt-4 pt-4 border-t border-outline-variant/15">
+                  <div className="flex justify-between text-[10px] uppercase font-geist text-on-surface-variant mb-1">
+                     <span>Effective Rate</span>
+                     <span>{data.effectiveTaxRate}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-surface-container-highest overflow-hidden">
+                     <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${data.effectiveTaxRate}%` }}
+                        transition={{ duration: 1.5, delay: 0.2 }}
+                        className="h-full bg-error"
+                     />
+                  </div>
+               </div>
             </div>
             <div className="bg-surface-container p-6 border border-outline-variant/30 border-t-2 border-t-accent-secondary">
                <div className="font-geist text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Realized Gains (YTD)</div>
@@ -76,8 +92,11 @@ export default function TaxPage() {
                       animate="show" 
                       className="divide-y divide-outline-variant/10"
                     >
-                       {data.events.map((evt, i) => (
-                          <StaggerRow key={i} className="hover:bg-surface-container-high/50 transition-colors">
+                        {data.events.map((evt, i) => (
+                          <StaggerRow 
+                            key={i} 
+                            className={`hover:bg-surface-container-high/50 transition-colors border-l-2 relative ${evt.gain >= 0 ? "border-l-accent-secondary" : "border-l-error"}`}
+                          >
                              <td className="py-4 px-6 text-on-surface-variant">{evt.date}</td>
                              <td className="py-4 px-6 text-right text-on-surface font-dm">{evt.asset}</td>
                              <td className="py-4 px-6 text-right text-on-surface">{formatUsd(evt.proceeds)}</td>
@@ -85,8 +104,10 @@ export default function TaxPage() {
                              <td className={`py-4 px-6 text-right font-medium ${evt.gain >= 0 ? 'text-accent-secondary' : 'text-error'}`}>
                                 {evt.gain >= 0 ? '+' : ''}{formatUsd(evt.gain)}
                              </td>
-                             <td className="py-4 px-6 text-right font-geist">
+                             <td className="py-4 px-6 text-right font-geist relative">
                                 <div className="inline-flex px-2 py-0.5 border border-outline-variant/30 text-[10px] uppercase text-on-surface-variant bg-surface-container-lowest">
+                                   {evt.gain > 0 && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-accent-secondary animate-ping" />}
+                                   {evt.gain > 0 && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-accent-secondary" />}
                                    {evt.term}
                                 </div>
                              </td>

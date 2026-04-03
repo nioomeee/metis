@@ -1,21 +1,53 @@
+'use client';
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { variant?: 'default' | 'glass' | 'ghost' }
->(({ className, variant = 'default', ...props }, ref) => {
+>(({ className, variant = 'default', children, onMouseMove, ...props }, ref) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const currentTarget = e.currentTarget;
+    const rect = currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    currentTarget.style.setProperty('--mouse-x', `${x}px`);
+    currentTarget.style.setProperty('--mouse-y', `${y}px`);
+    
+    if (onMouseMove) {
+      onMouseMove(e);
+    }
+  };
+
   return (
-    <div
-      ref={ref}
+    <motion.div
+      ref={ref as any}
+      initial={{ opacity: 0, y: 30, rotateX: 10 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      onMouseMove={handleMouseMove}
       className={cn(
-        "metis-card-default",
+        "metis-card-default relative group overflow-hidden",
         variant === 'glass' && "metis-card-glass",
         variant === 'ghost' && "bg-transparent border border-outline-variant/15",
         className
       )}
-      {...props}
-    />
+      {...props as any}
+    >
+      <div 
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-0"
+        style={{
+          background: `radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(123, 110, 246, 0.1), transparent 40%)`,
+        }}
+      />
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
+    </motion.div>
   )
 })
 Card.displayName = "Card"
