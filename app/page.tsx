@@ -227,7 +227,8 @@ function SystemLogsContent({ open }: { open: boolean }) {
         clearInterval(iv);
         return;
       }
-      setDisplayed((prev) => [...prev, LOG_ENTRIES[idx]]);
+      const entryToAdd = LOG_ENTRIES[idx];
+      setDisplayed((prev) => [...prev, entryToAdd]);
       idx++;
     }, 180);
     return () => clearInterval(iv);
