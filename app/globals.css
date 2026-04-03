@@ -181,6 +181,11 @@
     background: rgba(247, 37, 133, 0.08);
     box-shadow: 0 0 20px rgba(247, 37, 133, 0.15);
   }
+
+  .font-mono-numbers {
+    font-family: 'Geist Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 /* Scrollbar styles */

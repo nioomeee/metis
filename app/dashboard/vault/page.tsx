@@ -102,8 +102,8 @@ export default function VaultPage() {
                                >
                                   <td className="py-4 px-6 text-on-surface">{pos.protocol}</td>
                                   <td className="py-4 px-6 text-right text-on-surface-variant">{pos.asset}</td>
-                                  <td className="py-4 px-6 text-right text-accent-primary/90">{formatUsd(pos.valueUsd)}</td>
-                                  <td className="py-4 px-6 text-right text-accent-secondary">+{pos.apy}%</td>
+                                  <td className="py-4 px-6 text-right text-accent-primary/90 font-mono-numbers">{formatUsd(pos.valueUsd)}</td>
+                                  <td className="py-4 px-6 text-right text-accent-secondary font-mono-numbers">+{pos.apy}%</td>
                                   <td className="py-4 px-6 text-right font-geist">
                                     <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-accent-secondary/10 border border-accent-secondary/20 text-accent-secondary text-[10px] uppercase">
                                        <span className="w-1.5 h-1.5 rounded-full bg-accent-secondary animate-pulse" /> Live
@@ -127,11 +127,11 @@ export default function VaultPage() {
                <CardContent className="flex-1 flex flex-col justify-center p-6 space-y-8">
                   <div>
                      <div className="font-geist text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Total Locked Value</div>
-                     <div className="font-serif text-4xl text-on-surface">{formatUsd(data.totalLocked)}</div>
+                     <div className="font-serif text-4xl text-on-surface font-mono-numbers">{formatUsd(data.totalLocked)}</div>
                   </div>
                   <div>
                      <div className="font-geist text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Blended APY</div>
-                     <div className="font-serif text-4xl text-accent-secondary">+{data.apy}%</div>
+                     <div className="font-serif text-4xl text-accent-secondary font-mono-numbers">+{data.apy}%</div>
                   </div>
                </CardContent>
             </Card>
@@ -143,7 +143,7 @@ export default function VaultPage() {
                <div>
                   <div className="font-geist text-sm text-error uppercase tracking-widest mb-1">Exposure Warning</div>
                   <div className="font-dm text-sm text-on-surface-variant leading-relaxed">
-                     Lending pool utilizing your USDC is carrying high-risk, uncollateralized fractional reserves over 12%. Immediate rebalancing to direct staked SOL is recommended.
+                     Lending pool utilizing your USDC is carrying high-risk, uncollateralized fractional reserves over <span className="font-mono-numbers">12%</span>. Immediate rebalancing to direct staked SOL is recommended.
                   </div>
                </div>
             </div>

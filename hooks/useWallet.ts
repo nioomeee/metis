@@ -1,32 +1,42 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { truncateAddress } from '@/lib/utils';
+import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
+import { useMemo } from 'react';
 
+/**
+ * useWallet Hook
+ * Proxies the real Solana wallet adapter hook but keeps the METIS app's expected interface.
+ */
 export function useWallet() {
-  const [connected, setConnected] = useState(false);
-  const address = connected ? 'METISx1abc123def456xyz' : null;
-  const shortAddress = address ? truncateAddress(address) : null;
+  const { 
+    publicKey, 
+    connected, 
+    connecting, 
+    disconnect, 
+    select, 
+    wallet, 
+    wallets,
+    connect
+  } = useSolanaWallet();
 
-  const handleConnect = useCallback(async () => {
-    setConnected(true);
-  }, []);
-
-  const handleDisconnect = useCallback(async () => {
-    setConnected(false);
-  }, []);
+  const address = publicKey ? publicKey.toBase58() : null;
+  
+  const shortAddress = useMemo(() => {
+    if (!address) return null;
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  }, [address]);
 
   return {
-    publicKey: connected ? { toBase58: () => address } as any : null,
+    publicKey,
     address,
     shortAddress,
     connected,
-    connecting: false,
+    connecting,
     disconnecting: false,
-    wallet: null,
-    wallets: [],
-    select: () => {},
-    connect: handleConnect,
-    disconnect: handleDisconnect,
+    wallet,
+    wallets,
+    select,
+    connect,
+    disconnect,
   };
 }

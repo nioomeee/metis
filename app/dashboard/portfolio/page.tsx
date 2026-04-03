@@ -98,27 +98,27 @@ export default function PortfolioPage() {
               <Activity className="w-3.5 h-3.5" /> Live Exposure
             </div>
             <div className="font-serif text-5xl md:text-7xl text-on-surface tracking-tighter flex items-center gap-4">
-              $<NumberScramble value={totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} />
+              <span className="font-mono-numbers">$</span><NumberScramble value={totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} />
             </div>
             {connected && apiPortfolio && (
               <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                 className="mt-2 flex items-center gap-2 text-[10px] font-ibm uppercase tracking-widest text-accent-primary/70">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-secondary animate-pulse" />
-                Devnet: {apiPortfolio.sol.toFixed(4)} SOL · {apiPortfolio.usdc.toFixed(2)} USDC
+                Devnet: <span className="font-mono-numbers">{apiPortfolio.sol.toFixed(4)}</span> SOL · <span className="font-mono-numbers">{apiPortfolio.usdc.toFixed(2)}</span> USDC
               </motion.div>
             )}
           </div>
           <div className="flex gap-10 text-right font-geist">
             <div>
               <div className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">24H Delta</div>
-              <div className={`text-lg flex items-center justify-end gap-1 ${data.pnl24h >= 0 ? 'text-accent-secondary' : 'text-error'}`}>
+              <div className={`text-lg flex items-center justify-end gap-1 font-mono-numbers ${data.pnl24h >= 0 ? 'text-accent-secondary' : 'text-error'}`}>
                 {data.pnl24h >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                 {formatUsd(Math.abs(data.pnl24h))} ({data.pnlPercent}%)
               </div>
             </div>
             <div>
               <div className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Raw SOL</div>
-              <div className="text-lg text-on-surface flex items-center gap-2 justify-end">
+              <div className="text-lg text-on-surface flex items-center gap-2 justify-end font-mono-numbers">
                 <Wallet className="w-4 h-4 text-outline-variant" /> {formatSol(data.solBalance * 1e9)}
               </div>
             </div>
@@ -164,9 +164,9 @@ export default function PortfolioPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-6 text-right text-on-surface">{asset.balance.toLocaleString()}</td>
-                        <td className="py-4 px-6 text-right text-accent-primary/90">{formatUsd(asset.valueUsd)}</td>
-                        <td className={`py-4 px-6 text-right ${asset.change24h >= 0 ? 'text-accent-secondary' : 'text-error'}`}>
+                        <td className="py-4 px-6 text-right text-on-surface font-mono-numbers">{asset.balance.toLocaleString()}</td>
+                        <td className="py-4 px-6 text-right text-accent-primary/90 font-mono-numbers">{formatUsd(asset.valueUsd)}</td>
+                        <td className={`py-4 px-6 text-right font-mono-numbers ${asset.change24h >= 0 ? 'text-accent-secondary' : 'text-error'}`}>
                           {asset.change24h > 0 ? '+' : ''}{asset.change24h}%
                         </td>
                         <td className="py-4 px-6 text-right text-on-surface-variant">
@@ -176,7 +176,7 @@ export default function PortfolioPage() {
                                 animate={{ width: `${asset.allocation}%` }}
                                 transition={{ duration: 1, delay: 0.5 + Math.random() * 0.5 }} />
                             </div>
-                            <span className="w-10">{asset.allocation}%</span>
+                            <span className="w-10 font-mono-numbers">{asset.allocation}%</span>
                           </div>
                         </td>
                       </StaggerRow>
@@ -243,9 +243,9 @@ export default function PortfolioPage() {
                     </div>
                     {apiPortfolio && (
                       <div className="mt-3 flex gap-6 text-[10px] font-ibm text-on-surface-variant uppercase tracking-widest">
-                        <span>Cost: <span className="text-accent-primary">0.5 USDC</span></span>
-                        <span>SOL: <span className="text-on-surface">{apiPortfolio.sol.toFixed(4)}</span></span>
-                        <span>USDC: <span className="text-on-surface">{apiPortfolio.usdc.toFixed(2)}</span></span>
+                        <span>Cost: <span className="text-accent-primary font-mono-numbers">0.5 USDC</span></span>
+                        <span>SOL: <span className="text-on-surface font-mono-numbers">{apiPortfolio.sol.toFixed(4)}</span></span>
+                        <span>USDC: <span className="text-on-surface font-mono-numbers">{apiPortfolio.usdc.toFixed(2)}</span></span>
                       </div>
                     )}
                   </motion.div>

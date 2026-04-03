@@ -15,8 +15,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const suppress = (e) => {
+                  const msg = e.message || (e.reason && e.reason.message) || "";
+                  if (msg.includes('MetaMask') || (e.filename && e.filename.includes('nkbihfbeogaeaoehlefnkodbefgpgknn'))) {
+                    e.stopImmediatePropagation();
+                    e.stopPropagation();
+                    if (e.preventDefault) e.preventDefault();
+                    return true;
+                  }
+                };
+                window.addEventListener('error', suppress, true);
+                window.addEventListener('unhandledrejection', suppress, true);
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased bg-background text-on-surface selection:bg-accent-primary selection:text-white">
-        
         <Providers>
           <CustomCursor />
           {children}
@@ -25,3 +45,4 @@ export default function RootLayout({
     </html>
   );
 }
+

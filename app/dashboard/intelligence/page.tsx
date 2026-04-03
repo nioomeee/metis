@@ -139,7 +139,7 @@ export default function IntelligencePage() {
             {aiResponse && (
               <div className="flex items-center gap-4">
                 <div className="font-geist text-[10px] uppercase text-on-surface-variant flex items-center gap-2">
-                  <Fingerprint className="w-3 h-3" /> Session ID: {aiResponse.sessionId}
+                  <Fingerprint className="w-3 h-3" /> Session ID: <span className="font-mono-numbers">{aiResponse.sessionId}</span>
                 </div>
                 <button 
                   onClick={handleCopy}
@@ -210,7 +210,7 @@ export default function IntelligencePage() {
                       </div>
                       <div className="flex justify-between items-center text-xs border-t border-outline-variant/15 mt-2 pt-2">
                          <span className="text-on-surface-variant">Hash</span>
-                         <span className="text-accent-primary font-geist truncate max-w-[120px]">{aiResponse.proof}</span>
+                         <span className="text-accent-primary font-geist truncate max-w-[120px] font-mono-numbers">{aiResponse.proof}</span>
                       </div>
                    </div>
                 </div>

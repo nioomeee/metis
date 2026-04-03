@@ -5,6 +5,7 @@ import { TypewriterText } from '@/components/motion/TypewriterText';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { useWallet } from '@/hooks/useWallet';
 import { useRouter } from 'next/navigation';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Loader2, Terminal, Wifi, ShieldCheck, X, Lock, Cpu, Eye, Key } from 'lucide-react';
@@ -12,7 +13,8 @@ import { Magnetic } from '@/components/motion/Magnetic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tilt3D } from '@/components/motion/Tilt3D';
 import { MetisLogo } from '@/components/brand/MetisLogo';
-import { AuroraBackground } from '@/components/effects/AuroraBackground';
+import { LiquidAurora } from '@/components/motion/LiquidAurora';
+import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 
 function BackgroundLines() {
   return (
@@ -666,8 +668,8 @@ function SecurityContent() {
 // ─── Landing Page ──────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const { connected, connect } = useWallet();
+  const { setVisible } = useWalletModal();
   const router = useRouter();
-  const [isConnecting, setIsConnecting] = useState(false);
   const [activeModal, setActiveModal] = useState<'logs' | 'network' | 'security' | null>(null);
 
   useEffect(() => {
@@ -677,17 +679,16 @@ export default function LandingPage() {
   }, [connected, router]);
 
   const handleConnect = async () => {
-    setIsConnecting(true);
-    await connect();
-    setTimeout(() => {
-      router.push('/dashboard/intelligence');
-    }, 400);
+    setVisible(true);
   };
 
   return (
     <PageTransition>
       <main className="min-h-screen relative flex flex-col bg-transparent selection:bg-[#F72585]/30">
-        <AuroraBackground />
+        <LiquidAurora />
+        
+        {/* Content wrapper to appear above aurora */}
+        <div className="relative z-10 flex flex-col min-h-screen">
 
         {/* Navigation / Header */}
         <header className="fixed top-0 w-full flex items-center justify-between px-8 py-6 z-50 bg-background/5 backdrop-blur-sm">
@@ -715,9 +716,7 @@ export default function LandingPage() {
             >
               Security
             </button>
-            <Button variant="ghost" className="text-xs h-8 border-accent-primary/20 hover:border-accent-primary/50" onClick={handleConnect}>
-              Connect
-            </Button>
+            <ConnectWalletButton />
           </div>
         </header>
 
@@ -750,18 +749,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-6 mt-4">
             <Magnetic strength={0.2}>
-              <Button
-                size="lg"
-                className="metis-liquid-btn px-12 h-14 font-dm font-semibold tracking-wide w-64 shadow-2xl shadow-accent-tertiary/20 group"
-                onClick={handleConnect}
-                disabled={isConnecting}
-              >
-                {isConnecting ? (
-                  <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Handshake...</span>
-                ) : (
-                  <span className="group-hover:tracking-widest transition-all duration-300">CONNECT ENCLAVE</span>
-                )}
-              </Button>
+              <ConnectWalletButton />
             </Magnetic>
             <Link href="/manifesto" className="text-on-surface-variant font-geist text-xs uppercase tracking-[0.2em] border-b border-outline-variant/30 pb-1 cursor-pointer hover:border-accent-tertiary hover:text-on-surface transition-all">
               Read Manifesto
@@ -781,7 +769,7 @@ export default function LandingPage() {
             <Tilt3D>
               <div className="metis-card-glass p-10 h-full group hover:-translate-y-2 transition-transform duration-500">
                 <div className="w-12 h-12 bg-accent-primary/20 flex items-center justify-center mb-8 border border-accent-primary/30 group-hover:bg-accent-primary/40 transition-colors" style={{ transform: 'translateZ(30px)' }}>
-                  <span className="text-[#7B6EF6] font-mono">01</span>
+                  <span className="text-[#7B6EF6] font-mono-numbers">01</span>
                 </div>
                 <h3 className="text-2xl font-serif italic mb-4" style={{ transform: 'translateZ(20px)' }}>Edge Encryption</h3>
                 <p className="text-sm text-on-surface-variant font-geist leading-relaxed" style={{ transform: 'translateZ(10px)' }}>
@@ -793,7 +781,7 @@ export default function LandingPage() {
             <Tilt3D>
               <div className="metis-card-glass p-10 h-full group hover:-translate-y-2 transition-transform duration-500 delay-75">
                 <div className="w-12 h-12 bg-accent-tertiary/20 flex items-center justify-center mb-8 border border-accent-tertiary/30 group-hover:bg-accent-tertiary/40 transition-colors" style={{ transform: 'translateZ(30px)' }}>
-                  <span className="text-[#F72585] font-mono">02</span>
+                  <span className="text-[#F72585] font-mono-numbers">02</span>
                 </div>
                 <h3 className="text-2xl font-serif italic mb-4" style={{ transform: 'translateZ(20px)' }}>TEE Handshakes</h3>
                 <p className="text-sm text-on-surface-variant font-geist leading-relaxed" style={{ transform: 'translateZ(10px)' }}>
@@ -805,7 +793,7 @@ export default function LandingPage() {
             <Tilt3D>
               <div className="metis-card-glass p-10 h-full group hover:-translate-y-2 transition-transform duration-500 delay-150">
                 <div className="w-12 h-12 bg-accent-secondary/20 flex items-center justify-center mb-8 border border-accent-secondary/30 group-hover:bg-accent-secondary/40 transition-colors" style={{ transform: 'translateZ(30px)' }}>
-                  <span className="text-[#4CC9F0] font-mono">03</span>
+                  <span className="text-[#4CC9F0] font-mono-numbers">03</span>
                 </div>
                 <h3 className="text-2xl font-serif italic mb-4" style={{ transform: 'translateZ(20px)' }}>Zero-Log Mandate</h3>
                 <p className="text-sm text-on-surface-variant font-geist leading-relaxed" style={{ transform: 'translateZ(10px)' }}>
@@ -869,7 +857,7 @@ export default function LandingPage() {
             <a href="#" className="hover:text-accent-tertiary transition-colors">Nodes</a>
           </div>
         </footer>
-
+        </div>
       </main>
 
       {/* ── Modals ─────────────────────────────────────────────────────────── */}

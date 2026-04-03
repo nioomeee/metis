@@ -48,5 +48,5 @@ export function NumberScramble({ value, className, duration = 800 }: NumberScram
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [value, duration]);
 
-  return <span className={className}>{display}</span>;
+  return <span className={`font-mono-numbers ${className}`}>{display}</span>;
 }

@@ -1,160 +1,134 @@
 'use client';
 
-import { motion, useSpring, useMotionValue } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
+/**
+ * LiquidAurora Component
+ * Creates animated aurora-like lights that follow cursor
+ * Used on landing page only
+ */
 export function LiquidAurora() {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Cursor parallax: noticeable and fluid
-  const sx = useSpring(mouseX, { damping: 50, stiffness: 20, mass: 2 });
-  const sy = useSpring(mouseY, { damping: 50, stiffness: 20, mass: 2 });
-
+  // Track cursor movement
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      // Range: -40 to +40 px for subtle parallax
-      mouseX.set((e.clientX / window.innerWidth - 0.5) * 80);
-      mouseY.set((e.clientY / window.innerHeight - 0.5) * 80);
+    const handleMouseMove = (event: MouseEvent) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePosition({
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        });
+      }
     };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, [mouseX, mouseY]);
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: -1,
-        background: '#07080C',
-        overflow: 'hidden',
-        pointerEvents: 'none',
-      }}
+      ref={containerRef}
+      className="fixed inset-0 z-0 overflow-hidden bg-black"
+      style={{ pointerEvents: 'none' }}
     >
-      {/* ── Blob 1: Electric Violet — top-left, cursor-driven ── */}
+      {/* Aurora Glow Orb 1 - Follows Cursor */}
       <motion.div
+        className="absolute rounded-full blur-3xl opacity-40"
         style={{
-          x: sx,
-          y: sy,
-          position: 'absolute',
-          top: '-20%',
-          left: '-15%',
-          width: '70vw',
-          height: '70vh',
-          borderRadius: '62% 38% 46% 54% / 60% 44% 56% 40%',
-          background: 'radial-gradient(ellipse at center, rgba(123,110,246,0.6) 0%, rgba(123,110,246,0.1) 60%, transparent 100%)',
-          filter: 'blur(90px)',
+          width: 400,
+          height: 400,
+          background: 'radial-gradient(circle, rgba(100, 200, 255, 0.6), transparent)',
+          left: mousePosition.x - 200,
+          top: mousePosition.y - 200,
         }}
         animate={{
-          x: ['-15%', '15%', '-5%'],
-          y: ['-10%', '15%', '-10%'],
-          borderRadius: [
-            '62% 38% 46% 54% / 60% 44% 56% 40%',
-            '38% 62% 63% 37% / 41% 57% 43% 59%',
-            '62% 38% 46% 54% / 60% 44% 56% 40%',
-          ],
+          opacity: [0.3, 0.5, 0.3],
         }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
       />
 
-      {/* ── Blob 2: Hot Pink — center ── */}
+      {/* Aurora Glow Orb 2 - Green/Teal */}
       <motion.div
+        className="absolute rounded-full blur-3xl"
         style={{
-          position: 'absolute',
-          top: '15%',
+          width: 500,
+          height: 500,
+          background: 'radial-gradient(circle, rgba(0, 200, 150, 0.4), transparent)',
           left: '20%',
-          width: '65vw',
-          height: '60vh',
-          borderRadius: '40% 60% 55% 45% / 50% 40% 60% 50%',
-          background: 'radial-gradient(ellipse at center, rgba(247,37,133,0.50) 0%, rgba(247,37,133,0.05) 65%, transparent 100%)',
-          filter: 'blur(100px)',
+          top: '30%',
         }}
         animate={{
-          x: [0, 80, -40, 0],
-          y: [0, -60, 40, 0],
-          scale: [1, 1.15, 0.9, 1],
-          borderRadius: [
-            '40% 60% 55% 45% / 50% 40% 60% 50%',
-            '60% 40% 45% 55% / 40% 60% 40% 60%',
-            '40% 60% 55% 45% / 50% 40% 60% 50%',
-          ],
+          x: [0, 50, -50, 0],
+          y: [0, -30, 30, 0],
+          opacity: [0.2, 0.4, 0.2],
         }}
-        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
       />
 
-      {/* ── Blob 3: Ice Blue — bottom-right ── */}
+      {/* Aurora Glow Orb 3 - Purple/Magenta */}
       <motion.div
+        className="absolute rounded-full blur-3xl"
         style={{
-          position: 'absolute',
-          bottom: '-15%',
-          right: '-10%',
-          width: '75vw',
-          height: '75vh',
-          borderRadius: '70% 30% 50% 50% / 30% 70% 30% 70%',
-          background: 'radial-gradient(ellipse at center, rgba(76,201,240,0.45) 0%, rgba(76,201,240,0.05) 65%, transparent 100%)',
-          filter: 'blur(110px)',
+          width: 450,
+          height: 450,
+          background: 'radial-gradient(circle, rgba(150, 50, 200, 0.3), transparent)',
+          right: '15%',
+          bottom: '20%',
         }}
         animate={{
-          x: [0, -80, 50, 0],
-          y: [0, 50, -40, 0],
-          scale: [1, 0.85, 1.1, 1],
-          borderRadius: [
-            '70% 30% 50% 50% / 30% 70% 30% 70%',
-            '30% 70% 50% 50% / 70% 30% 70% 30%',
-            '70% 30% 50% 50% / 30% 70% 30% 70%',
-          ],
+          x: [0, -40, 40, 0],
+          y: [0, 40, -40, 0],
+          opacity: [0.15, 0.35, 0.15],
         }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
       />
 
-      {/* ── Blob 4: Deep Magenta — bottom-left accent ── */}
+      {/* Aurora Glow Orb 4 - Blue Accent */}
       <motion.div
+        className="absolute rounded-full blur-3xl"
         style={{
-          position: 'absolute',
-          bottom: '0%',
-          left: '-5%',
-          width: '50vw',
-          height: '50vh',
-          borderRadius: '55% 45% 40% 60% / 50% 55% 45% 50%',
-          background: 'radial-gradient(ellipse at center, rgba(219,39,119,0.40) 0%, transparent 75%)',
-          filter: 'blur(85px)',
+          width: 350,
+          height: 350,
+          background: 'radial-gradient(circle, rgba(50, 150, 255, 0.35), transparent)',
+          left: '60%',
+          top: '50%',
         }}
         animate={{
-          x: [0, 100, -50, 0],
-          y: [0, -60, 40, 0],
-          scale: [1, 1.25, 0.85, 1],
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.4, 0.2],
         }}
-        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
       />
 
-      {/* ── Blob 5: Soft Lavender — top-right ── */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '-10%',
-          right: '0%',
-          width: '45vw',
-          height: '45vh',
-          borderRadius: '50%',
-          background: 'radial-gradient(ellipse at center, rgba(167,139,250,0.35) 0%, transparent 70%)',
-          filter: 'blur(75px)',
-        }}
-        animate={{
-          x: [0, -60, 40, 0],
-          y: [0, 40, -30, 0],
-        }}
-        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      {/* ── Film grain overlay ── */}
+      {/* Subtle Grid Overlay */}
       <div
+        className="absolute inset-0"
         style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          opacity: 0.025,
-          mixBlendMode: 'overlay' as const,
+          backgroundImage: `
+            linear-gradient(rgba(100, 200, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(100, 200, 255, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          pointerEvents: 'none',
         }}
       />
     </div>
