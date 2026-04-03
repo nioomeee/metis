@@ -1,0 +1,266 @@
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/geist-mono/400.css';
+@import '@fontsource/geist-mono/500.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Cinzel:wght@700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  :root {
+    /* Abyssal Palette based on Stitch METIS System */
+    --background: #07080C;
+    --surface: #07080C;
+    --surface-dim: #050609;
+    --surface-bright: #101116;
+    
+    --surface-container-lowest: #000000;
+    --surface-container-low: #0E0F16;
+    --surface-container: #141520;
+    --surface-container-high: #1C1E2E;
+    --surface-container-highest: #26283C;
+    
+    --on-surface: #E8EAF2;
+    --on-surface-variant: #A2A5B5;
+    
+    --outline: #464850;
+    --outline-variant: rgba(70, 72, 80, 0.15); /* Ghost Border */
+    
+    --primary: #7B6EF6;
+    --on-primary: #FFFFFF;
+    --primary-container: #473CA8;
+    --on-primary-container: #E1DEFF;
+    
+    --secondary: #4CC9F0;
+    --on-secondary: #003642;
+    --secondary-container: #004D5F;
+    --on-secondary-container: #B4EBFF;
+    
+    --tertiary: #F72585;
+    --on-tertiary: #520027;
+    --tertiary-container: #77003A;
+    --on-tertiary-container: #FFD9E2;
+    
+    --error: #F72585; /* Re-used tertiary for critical failure */
+    --on-error: #690005;
+    --error-container: #93000A;
+    --on-error-container: #FFDAD6;
+
+    --accent-primary: #7B6EF6;
+    --accent-secondary: #4CC9F0;
+    --accent-tertiary: #F72585;
+  }
+
+  * {
+    border-color: var(--outline-variant);
+  }
+
+  body {
+    background-color: transparent;
+    color: var(--on-surface);
+    cursor: none; /* Handled by CustomCursor */
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .metis-card-default {
+    @apply bg-surface-container-low border border-outline-variant text-on-surface rounded-none;
+  }
+  
+  .metis-card-glass {
+    @apply backdrop-blur-3xl border border-white/10 text-on-surface rounded-none relative overflow-hidden;
+    background-color: rgba(7, 8, 12, 0.4);
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.05),
+      0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+
+  
+  .glass-shine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    z-index: 1;
+  }
+
+  .metis-btn-primary {
+    @apply bg-gradient-to-br from-accent-primary to-[#5F52DA] text-white border-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] rounded-none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .metis-btn-primary:hover {
+    @apply shadow-[0_0_20px_rgba(123,110,246,0.3)_inset,0_1px_0_rgba(255,255,255,0.2)];
+    transform: scale(1.02);
+  }
+
+  .metis-btn-ghost {
+    @apply bg-transparent border border-outline-variant rounded-none backdrop-blur-md;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .metis-btn-ghost:hover {
+    @apply bg-surface-container-high text-accent-primary;
+    border-color: rgba(123, 110, 246, 0.5);
+  }
+
+  .metis-input {
+    @apply bg-surface-container border-b text-on-surface rounded-none focus:outline-none focus:border-accent-secondary;
+    border-color: rgba(70, 72, 80, 0.3);
+    transition: border-color 0.3s ease;
+  }
+
+  /* Premium button — NO distortion filter, only glow + lift */
+  .metis-liquid-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    background: linear-gradient(135deg, rgba(123, 110, 246, 0.9) 0%, rgba(247, 37, 133, 0.85) 100%);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .metis-liquid-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .metis-liquid-btn:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px rgba(247, 37, 133, 0.4),
+      0 8px 32px rgba(247, 37, 133, 0.35),
+      0 0 60px rgba(123, 110, 246, 0.2);
+  }
+
+  .metis-liquid-btn:hover::before {
+    opacity: 1;
+  }
+
+  .metis-liquid-btn:active {
+    transform: translateY(-1px);
+  }
+
+  /* Ghost button — premium no-deform */
+  .metis-btn-ghost {
+    @apply bg-transparent rounded-none;
+    border: 1px solid rgba(123, 110, 246, 0.25);
+    color: rgba(232, 234, 242, 0.7);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+
+  .metis-btn-ghost:hover {
+    border-color: rgba(247, 37, 133, 0.5);
+    color: #fff;
+    background: rgba(247, 37, 133, 0.08);
+    box-shadow: 0 0 20px rgba(247, 37, 133, 0.15);
+  }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface-container-lowest);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-container-high);
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Background FX Layers */
+.bg-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.025;
+}
+
+.bg-blobs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-blobs::before,
+.bg-blobs::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+}
+
+.bg-blobs::before {
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vh;
+  background: var(--accent-primary);
+  animation: float 20s ease-in-out infinite alternate;
+}
+
+.bg-blobs::after {
+  bottom: -10%;
+  right: -10%;
+  width: 60vw;
+  height: 60vh;
+  background: var(--accent-secondary);
+  animation: float 25s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(10%, 15%); }
+}
+
+/* Loading scanline */
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--accent-primary), transparent);
+  opacity: 0.4;
+  pointer-events: none;
+}
