@@ -3,11 +3,16 @@
 import { PageTransition } from '@/components/motion/PageTransition';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { TiltCard } from '@/components/ui/TiltCard';
+import { TypewriterText } from '@/components/motion/TypewriterText';
 import { getMockExitVectors } from '@/lib/mockSolRouter';
 import { formatUsd } from '@/lib/utils';
-import { Signpost, Target } from 'lucide-react';
+import { Signpost, Target, Brain, Loader2, AlertTriangle, Lock, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useAIQuery } from '@/lib/hooks/useAIQuery';
 
 function RiskMatrix() {
   return (
@@ -21,13 +26,29 @@ function RiskMatrix() {
 }
 
 export default function ExitVectorPage() {
+  const { publicKey, connected } = useWallet();
+  const { setVisible } = useWalletModal();
+  const walletAddress = publicKey?.toString() ?? null;
+
   const [data, setData] = useState<ReturnType<typeof getMockExitVectors> | null>(null);
   // BUG FIX: activeScenario is user-controlled only, initialised to null (no default highlight)
   const [activeScenario, setActiveScenario] = useState<number | null>(null);
 
-  useEffect(() => {
-    setData(getMockExitVectors());
-  }, []);
+  useEffect(() => { setData(getMockExitVectors()); }, []);
+
+  // ── AI Query hook ────────────────────────────────────────────────────
+  const { loading, error, data: aiData, execute, reset } = useAIQuery({
+    walletAddress,
+    queryType: 'exit',
+  });
+
+  const handleAnalyze = () => {
+    if (!connected) { setVisible(true); return; }
+    reset();
+    execute();
+  };
+
+  const aiResponse: string | null = aiData?.aiResponse ?? null;
 
   if (!data) return null;
 
@@ -172,6 +193,89 @@ export default function ExitVectorPage() {
             Routes calculated using local order-book aggregation via remote TEE enclave. <br/>
             Execution guarantees hold for 30 seconds.
          </div>
+
+         {/* ── SolRouter Exit Strategy AI Panel ─────────────────────── */}
+         <section>
+           <div className="font-geist text-on-surface-variant text-sm border-l-2 border-accent-secondary/50 pl-3 uppercase tracking-widest mb-6 flex items-center gap-2">
+             <Brain className="w-4 h-4 text-accent-secondary" />
+             SolRouter Exit Intelligence
+           </div>
+           <TiltCard variant="default" className="relative overflow-hidden">
+             <div className="absolute top-4 right-4 flex items-center gap-1.5 text-[9px] font-ibm uppercase tracking-widest text-accent-primary/50 border border-accent-primary/20 px-2 py-1">
+               <Lock className="w-2.5 h-2.5" /> Zero-Log TEE
+             </div>
+             <div className="p-6 space-y-5">
+               <p className="font-geist text-xs text-on-surface-variant leading-relaxed max-w-2xl">
+                 Connect your wallet to generate an AI-modeled exit execution plan. Your holdings are encrypted
+                 before analysis. 2.0 USDC required per strategy.
+               </p>
+
+               <button
+                 id="exit-analyze-btn"
+                 onClick={handleAnalyze}
+                 disabled={loading}
+                 className="relative group flex items-center gap-2 px-6 py-3 bg-accent-secondary/10 border border-accent-secondary/40 text-accent-secondary font-geist text-xs uppercase tracking-widest hover:bg-accent-secondary/20 hover:border-accent-secondary/70 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+               >
+                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
+                 {!connected
+                   ? 'Connect Wallet to Model Exit'
+                   : loading
+                   ? 'Modeling Exit Vectors...'
+                   : 'Generate Exit Strategy'}
+               </button>
+
+               <AnimatePresence mode="wait">
+                 {loading && (
+                   <motion.div key="step"
+                     initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 6 }}
+                     className="flex items-center gap-2 text-[10px] font-ibm uppercase tracking-widest text-accent-secondary">
+                     <Loader2 className="w-3 h-3 animate-spin" /> ROUTING EXIT VECTORS TO TEE ENCLAVE...
+                   </motion.div>
+                 )}
+               </AnimatePresence>
+
+               <AnimatePresence>
+                 {error?.includes('USDC') || error?.includes('Insufficient') ? (
+                   <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                     className="flex items-start gap-3 p-4 bg-accent-tertiary/10 border border-accent-tertiary/30 text-accent-tertiary text-xs font-ibm">
+                     <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                     {error} — Claim Devnet USDC at the Circle Faucet to proceed.
+                   </motion.div>
+                 ) : error ? (
+                   <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                     className="flex items-start gap-3 p-4 bg-error/10 border border-error/30 text-error text-xs font-ibm">
+                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />{error}
+                   </motion.div>
+                 ) : null}
+               </AnimatePresence>
+
+               <AnimatePresence>
+                 {aiResponse && (
+                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                     <div className="flex items-center gap-2 mb-3">
+                       <ShieldCheck className="w-3.5 h-3.5 text-accent-secondary" />
+                       <span className="text-[9px] font-ibm uppercase tracking-widest text-accent-secondary">
+                         Verified Exit Strategy — Enclave Signed
+                       </span>
+                     </div>
+                     <div className="p-5 bg-surface-container-lowest border border-outline-variant/20 border-l-2 border-l-accent-secondary/60">
+                       <TypewriterText
+                         text={aiResponse}
+                         speed={18}
+                         className="font-ibm text-sm text-on-surface/90 leading-relaxed whitespace-pre-wrap"
+                       />
+                     </div>
+                     <div className="mt-3 text-[10px] font-ibm text-on-surface-variant uppercase tracking-widest">
+                       Cost: <span className="text-accent-secondary">2.0 USDC</span>
+                       &nbsp;·&nbsp; Guarantee Window: <span className="text-on-surface">30s</span>
+                     </div>
+                   </motion.div>
+                 )}
+               </AnimatePresence>
+             </div>
+           </TiltCard>
+         </section>
+
       </div>
     </PageTransition>
   );

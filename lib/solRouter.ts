@@ -1,3 +1,5 @@
+'use server';
+
 import { SolRouter } from '@solrouter/sdk';
 
 const apiKey = process.env.NEXT_PUBLIC_SOLROUTER_API_KEY || '';

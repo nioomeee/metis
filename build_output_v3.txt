@@ -1,0 +1,29 @@
+
+> metis@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./components/WalletContextProvider.tsx:22:10
+Type error: 'ConnectionProvider' cannot be used as a JSX component.
+  Its type 'FC<ConnectionProviderProps>' is not a valid JSX element type.
+    Type 'FunctionComponent<ConnectionProviderProps>' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'ReactNode | Promise<ReactNode>' is not assignable to type 'ReactNode'.
+        Type 'ReactElement<unknown, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+          Property 'children' is missing in type 'ReactElement<unknown, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+
+  20 |
+  21 |     return (
+> 22 |         <ConnectionProvider endpoint={endpoint}>
+     |          ^
+  23 |             <WalletProvider wallets={wallets} autoConnect>
+  24 |                 <WalletModalProvider>{children}</WalletModalProvider>
+  25 |             </WalletProvider>
+Next.js build worker exited with code: 1 and signal: null
