@@ -5,6 +5,17 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/com
 import { Toggle } from '@/components/ui/Toggle';
 import { useApp } from '@/context/AppContext';
 import { Settings as SettingsIcon, Shield, Server, EyeOff, LayoutPanelLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+function RpcLatencyBars() {
+  return (
+    <div className="flex items-end gap-1 h-5 px-2 py-1 bg-surface-container rounded-sm border border-outline-variant/30 ml-2">
+       <motion.div animate={{ height: ['40%', '80%', '40%'] }} transition={{ duration: 1.2, repeat: Infinity }} className="w-1.5 rounded-t-sm bg-accent-secondary" />
+       <motion.div animate={{ height: ['60%', '100%', '60%'] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }} className="w-1.5 rounded-t-sm bg-accent-tertiary" />
+       <motion.div animate={{ height: ['30%', '50%', '30%'] }} transition={{ duration: 1.8, repeat: Infinity, delay: 0.4 }} className="w-1.5 rounded-t-sm bg-error" />
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const { settings, updateSettings, isHydrated } = useApp();
@@ -37,15 +48,18 @@ export default function SettingsPage() {
                         <div className="font-dm font-medium text-sm text-on-surface mb-1">RPC Endpoint Selection</div>
                         <div className="font-ibm text-xs text-on-surface-variant max-w-md">Override default Solana public RPCs with your own private node connection to prevent mempool tracking.</div>
                      </div>
-                     <select 
-                       className="bg-surface-container-highest border border-outline-variant/30 text-xs font-geist text-on-surface px-3 py-2 outline-none focus:border-accent-primary"
-                       value={settings.rpcEndpoint}
-                       onChange={(e) => updateSettings({ rpcEndpoint: e.target.value as any })}
-                     >
-                        <option value="mainnet">Mainnet-beta (Default)</option>
-                        <option value="devnet">Devnet</option>
-                        <option value="custom">Custom Node URL...</option>
-                     </select>
+                     <div className="flex items-center">
+                        <select 
+                          className="bg-surface-container-highest border border-outline-variant/30 text-xs font-geist text-on-surface px-3 py-2 outline-none focus:border-accent-primary"
+                          value={settings.rpcEndpoint}
+                          onChange={(e) => updateSettings({ rpcEndpoint: e.target.value as any })}
+                        >
+                           <option value="mainnet">Mainnet-beta (Default)</option>
+                           <option value="devnet">Devnet</option>
+                           <option value="custom">Custom Node URL...</option>
+                        </select>
+                        <RpcLatencyBars />
+                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-outline-variant/10">
